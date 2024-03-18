@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chitra.AI - Image Upscale & Enhance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+
+    <style>
+        /* Keep the existing styles */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            padding-bottom: 150px; /* Add padding to accommodate expanded dropdown */
+        }
+
+        header {
+            background-color: white;
+            box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+            color: #333;
+            text-align: left;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 2;
+            transition: background-color 0.3s, padding 0.3s;
+        }
+
+        header.active {
+            background-color: #fff;
+            padding: 10px 20px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2em;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        nav {
+            margin-top: 10px;
+        }
+
+        nav a {
+            text-decoration: none;
+            color: #333;
+            margin-right: 15px;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 260px;
+            box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+        }
+
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+
+        .dropdown-content a {
+            color: #333;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .dropdown-content a:hover {
+            background-color: #ddd;
+        }
+
+        .login-signup {
+            background-color: white;
+            color: #3498db;
+            padding: 8px 16px;
+            font-size: 1.2em;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 8px;
+            margin-left: 30px;
+            margin-right: 30px;
+        }
+
+        .menu-icon {
+            font-size: 2em;
+            color: #3498db;
+            display: none;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 3;
+        }
+
+        .menu-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 50%;
+            height: 100%;
+            background-color: white;
+            text-align: center;
+            z-index: 2;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+
+        .menu-items a {
+            font-size: 1.5em;
+            margin: 10px 0;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .image-container {
+                flex-direction: column;
+            }
+
+            .image-container div {
+                width: 100%;
+            }
+
+            .login-signup,
+            header nav {
+                display: none;
+            }
+
+            .menu-icon {
+                display: block;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            nav {
+                order: 2;
+            }
+
+            .menu-container.active {
+                display: block;
+            }
+
+            .menu-container.active .login-signup {
+                display: block;
+                margin-top: 10px;
+                font-size: .7em;
+                margin-right: 50;
+            }
+
+            .menu-container.active nav {
+                display: flex;
+                flex-direction: column;
+                margin-top: 20px;
+            }
+
+            .menu-icon.active {
+                right: 10px;
+            }
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            padding: 20px;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        }
+
+        .contact-us {
+            margin-top: 20px;
+        }
+
+        .footer-text {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .footer-column {
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .social-media {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .social-media a {
+            text-decoration: none;
+            color: white;
+            margin: 0 10px;
+            font-size: 1.5em;
+        }
+
+        .social-media i {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .about-us-dropdown {
+            display: none;
+            padding: 10px;
+        }
+
+        .about-us-dropdown.active {
+            display: block;
+        }
+
+        .about-us-content {
+            display: none;
+        }
+
+        .about-us-dropdown.active .about-us-content {
+            display: block;
+        }
+
+        .main-content {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 24px; /* Increase font size for smaller screens */
+        }
+
+        @media only screen and (min-width: 768px) {
+            .main-content {
+                font-size: 48px; /* Reset font size for larger screens */
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="menu-icon" onclick="toggleMenu()">☰</div>
+<div class="menu-container">
+    <div class="menu-items">
+        <div class="login-signup">Login/Sign Up</div>
+        <nav>
+            <a href="index.html">Home</a>
+            <div class="dropdown">
+                <a href="#services">Services</a>
+                <div class="dropdown-content">
+                    <a href="#">AI Image Upscaling</a>
+                    <a href="#">AI Background Remove</a>
+                    <a href="#">Remove Unwanted Object</a>
+                    <a href="#">Image Lip-Sync</a>
+                </div>
+            </div>
+            <a href="#tools">Tools</a>
+            <a href="#price">Price</a>
+        </nav>
+    </div>
+</div>
+
+<header>
+    <div>
+        <h1>Chitra.AI</h1>
+        <p>Your Image Processing Solution</p>
+        <nav>
+            <a href="index.html">Home</a>
+            <div class="dropdown">
+                <a href="#services">Services</a>
+                <div class="dropdown-content">
+                    <a href="#">AI Image Upscaling</a>
+                    <a href="#">AI Background Remove</a>
+                    <a href="#">Remove Unwanted Object</a>
+                    <a href="#">Image Lip-Sync</a>
+                </div>
+            </div>
+            <a href="#tools">Tools</a>
+            <a href="#price">Price</a>
+        </nav>
+    </div>
+    <div class="login-signup">
+        Login/Sign Up
+    </div>
+</header>
+
+<div class="main-content">
+    <h2>AI Image Upscale & Enhance</h2>
+</div>
+
+<footer>
+    <div class="footer-text">
+        <div class="footer-column">
+          <div class="about-us">
+            <p class="about-us-title" onclick="toggleAboutUsDropdown()">About Us</p>
+            <div class="about-us-dropdown">
+              <p class="about-us-content">Founded in 2024, with a group of technomaniacs, Chitra.AI leverages the power of artificial intelligence and computer vision to deliver a wide range of products that make your life much easier and your work more productive. About Chitra.AI's commitment to innovation and excellence: Chitra.AI is dedicated to pushing the boundaries of what's possible with AI-driven image processing. Our team of experts is passionate about delivering state-of-the-art solutions to meet your unique needs.</p>
+            </div>
+          </div>
+          <div class="contact-us">
+            <p>Contact Us</p>
+            <p>US Office - North Carolina</p>
+            <p>India Office - Kolkata, India</p>
+            <p>Email: contact@chitra.com</p>
+            <p>WhatsApp: +919635507711</p>
+          </div>
+        </div>
+        <div class="footer-column">
+          <div class="our-tools">
+            <p>Our Tools</p>
+            <p>AI Image Upscaling</p>
+            <p>AI Background Remove</p>
+            <p>Remove Unwanted Object</p>
+            <p>Image Lip-Sync</p>
+          </div>
+          <div class="privacy-policy">
+            <p><a href="Privacy_Policy.html">Privacy Policy</a></p>
+          </div>
+        </div>
+        <div class="footer-column">
+          <div class="social-media">
+            <p>Follow us on social media</p>
+            <a href="#" target="_blank"><i class="fab fa-linkedin"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-facebook"></i></a>
+            <a href="#" target="_blank"><i class="fab fa-twitter"></i></a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+<script>
+    function toggleMenu() {
+        var menuContainer = document.querySelector('.menu-container');
+        menuContainer.classList.toggle('active');
+        var menuIcon = document.querySelector('.menu-icon');
+        menuIcon.classList.toggle('active');
+    }
+
+    function toggleAboutUsDropdown() {
+      var aboutUsDropdown = document.querySelector('.about-us-dropdown');
+      aboutUsDropdown.classList.toggle('active');
+    }
+</script>
+</body>
+</html>
